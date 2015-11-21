@@ -96,12 +96,13 @@ public class SpencersRobot extends Robot
 		if(currentHeading > absoluteHeading)
 		{
 		  delta = currentHeading - absoluteHeading;
+		  turnLeft(delta);
 		}
 		else
 		{
 		  delta = absoluteHeading - currentHeading;
+		  turnRight(delta);
 		}
-		turnRight(delta);	
 	}
 	
 	public void onRobotDeath(RobotDeathEvent e)
@@ -150,8 +151,8 @@ public class SpencersRobot extends Robot
 					}
 				break;
 		}
-		System.out.println("myEnemyBot name: "+myEnemyBot.getName());
-		System.out.println("myEnemyBot position: "+myEnemyBot.getX()+","+myEnemyBot.getY());
+		//System.out.println("myEnemyBot name: "+myEnemyBot.getName());
+		//System.out.println("myEnemyBot position: "+myEnemyBot.getX()+","+myEnemyBot.getY());
 	}
 
 	/**
