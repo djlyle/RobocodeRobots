@@ -55,18 +55,14 @@ public class SpencersRobot extends Robot
 	private void patrol(){
 		System.out.println("In patrol function");
 		// Replace the next 4 lines with any behavior you would like
-		ahead(30);
-		turnRight(20);
-		ahead(40);
-		turnRight(90);
-		ahead(70);
-		turnRight(90);
-		ahead(100);
+		ahead(25);
+		turnRight(10);
 	}
 	
 	private void hide(){
 		System.out.println("In hide function");
-		turnToHeading(myEnemyBot.getBearing()+180);
+		double absBearingDeg = getAbsoluteBearing(getHeading(),myEnemyBot.getBearing());
+		turnToHeading((absBearingDeg+180)%360);
 		ahead(25);
 	}
 	
@@ -107,6 +103,24 @@ public class SpencersRobot extends Robot
 		}
 		turnRight(delta);	
 	}
+	
+	public void onRobotDeath(RobotDeathEvent e)
+	{
+		switch(myState)
+		{
+			case PATROL:
+			break;
+			case HUNT:
+				if(e.getName().equals(myEnemyBot.getName()))
+				{
+					myEnemyBot.reset();	
+					myState = RobotState.PATROL;
+				}	
+			break;	
+			case HIDE:
+			break;
+		}	
+	}
 
 	/**
 	 * onScannedRobot: What to do when you see another robot
@@ -145,7 +159,6 @@ public class SpencersRobot extends Robot
 	 */
 	public void onHitByBullet(HitByBulletEvent e) {
 		// Replace the next line with any behavior you would like
-		back(10);
 	}
 	
 	/**
