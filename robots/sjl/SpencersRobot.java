@@ -35,6 +35,7 @@ public class SpencersRobot extends Robot
 		
 		// Robot main loop
 		while(true) {
+		    turnRadarRight(360);
 			switch(myState)
 			{
 				case PATROL:
@@ -43,47 +44,99 @@ public class SpencersRobot extends Robot
 				case HIDE:
 					hide();
 				break;
+				case HUNT:
+				    hunt();
+				break;
 			} 
 			
 		}
 	}
 	
 	private void patrol(){
+		System.out.println("In patrol function");
 		// Replace the next 4 lines with any behavior you would like
-		ahead(100);
-		turnGunRight(90);
+		ahead(30);
+		turnRight(20);
+		ahead(40);
 		turnRight(90);
-		ahead(100);
-		turnGunRight(90);
+		ahead(70);
 		turnRight(90);
-		ahead(100);
-		turnRight(90);
-		turnGunRight(90);
 		ahead(100);
 	}
 	
 	private void hide(){
-		ahead(100);
-		turnRight(45);
-		ahead(100);
-		turnRight(45);
-		back(100);
-		turnRight(45);
-		back(100);
+		System.out.println("In hide function");
+		turnToHeading(myEnemyBot.getBearing()+180);
+		ahead(25);
+	}
+	
+	//Calculate absolute bearing to something (e.g. an enemy robot)
+	//based on its relative bearing
+	private double getAbsoluteBearing(double absoluteHeading, double relativeBearing)
+	{
+		double absBearingDeg = absoluteHeading + relativeBearing;
+		if(absBearingDeg < 0)
+		{
+			absBearingDeg += 360;
+		}
+		return absBearingDeg;
 	}
 	
 	private void hunt(){
+		System.out.println("In hunt function");
+		double absBearingDeg = getAbsoluteBearing(getHeading(),myEnemyBot.getBearing());
 		
-	
+		turnToHeading(absBearingDeg);
+		ahead(25);
+		fire(3);
 	}
 	
+	//Turn robot until facing absolute heading 
+	//where absolute heading is between 0 and 360 degrees
+	private void turnToHeading(double absoluteHeading)
+	{
+		double currentHeading = getHeading();
+		double delta;
+		if(currentHeading > absoluteHeading)
+		{
+		  delta = currentHeading - absoluteHeading;
+		}
+		else
+		{
+		  delta = absoluteHeading - currentHeading;
+		}
+		turnRight(delta);	
+	}
 
 	/**
 	 * onScannedRobot: What to do when you see another robot
 	 */
 	public void onScannedRobot(ScannedRobotEvent e) {
-		// Replace the next line with any behavior you would like
-		myEnemyBot.update(e,this);	
+		switch(myState)
+		{
+				case PATROL:
+					// Replace the next line with any behavior you would like
+					myEnemyBot.update(e,this);	
+					myState = RobotState.HUNT;	
+				break;
+				case HUNT:
+					if(e.getName().equals(myEnemyBot.getName()))
+					{
+						myEnemyBot.update(e,this);
+					}
+					if(getEnergy() < 25)
+					{
+						myState = RobotState.HIDE;
+					}
+				break;
+				case HIDE:
+					if(e.getDistance() < myEnemyBot.getDistance())
+					{
+						myEnemyBot.update(e,this);
+					}
+				break;
+		}
+		System.out.println("myEnemyBot name: "+myEnemyBot.getName());
 		System.out.println("myEnemyBot position: "+myEnemyBot.getX()+","+myEnemyBot.getY());
 	}
 

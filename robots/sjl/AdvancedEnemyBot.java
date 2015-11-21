@@ -28,6 +28,7 @@ public class AdvancedEnemyBot extends EnemyBot
 		y = 0;	
 	}
 	
+	
 	public void update(ScannedRobotEvent e, Robot robot)
 	{
 		super.update(e);
